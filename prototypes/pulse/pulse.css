@@ -1,0 +1,168 @@
+/* City Pulse — full-screen 2040 AI traffic-junction prototype */
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Sora:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap');
+
+:root{
+  --ink:#0B1026; --ink2:#11163A; --text:#EAF2FF; --slate:#6E7BA6;
+  --cyan:#2BE5FF; --ok:#6EE7A8; --warn:#FFB155; --danger:#FF6B6B;
+  --road:#161d44; --road-edge:rgba(120,160,255,.14);
+  --panel:rgba(15,21,52,.62); --panel-edge:rgba(140,180,255,.20);
+}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{font-family:'Sora',system-ui,sans-serif;color:var(--text);background:#05071a;overflow:hidden;
+  -webkit-font-smoothing:antialiased;user-select:none}
+#root{position:fixed;inset:0}
+
+.stagewrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(130% 90% at 50% -10%, #0c1230 0%, #05071a 70%)}
+.stage{position:relative;width:1920px;height:1080px;flex:none;transform-origin:center center;overflow:hidden;
+  background:
+    radial-gradient(70% 60% at 50% 50%, #0d1436 0%, #080d28 70%),
+    linear-gradient(165deg,#0a1030 0%,#0b1130 50%,#080d28 100%)}
+
+.bg-grid{position:absolute;inset:0;opacity:.45;
+  background-image:linear-gradient(rgba(120,160,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(120,160,255,.05) 1px,transparent 1px);
+  background-size:64px 64px;mask:radial-gradient(120% 90% at 50% 50%,#000 50%,transparent 100%)}
+.stars{position:absolute;inset:0;pointer-events:none}
+.stars i{position:absolute;width:2px;height:2px;border-radius:50%;background:#cfe4ff;animation:tw var(--d,4s) ease-in-out infinite alternate}
+@keyframes tw{from{opacity:.12}to{opacity:.7}}
+
+/* ===== roads ===== */
+.roads{position:absolute;inset:0}
+.road{position:absolute;background:linear-gradient(var(--g,180deg),#10173a,#191f4e 50%,#10173a);
+  box-shadow:inset 0 0 0 1.5px var(--road-edge)}
+.road.h{left:0;right:0;top:50%;height:200px;transform:translateY(-50%);--g:180deg}
+.road.v{top:0;bottom:0;left:50%;width:200px;transform:translateX(-50%);--g:90deg}
+/* lane dashes */
+.lane{position:absolute;background:repeating-linear-gradient(var(--d,90deg),rgba(150,180,255,.35) 0 24px,transparent 24px 52px)}
+.lane.h{left:0;right:0;top:50%;height:2px;transform:translateY(-50%);--d:90deg}
+.lane.v{top:0;bottom:0;left:50%;width:2px;transform:translateX(-50%);--d:180deg}
+/* junction box */
+.box{position:absolute;left:50%;top:50%;width:200px;height:200px;transform:translate(-50%,-50%);
+  border:1.5px dashed rgba(150,180,255,.25);border-radius:6px;
+  background:radial-gradient(closest-side, rgba(43,229,255,.05), transparent 80%)}
+.box .cross{position:absolute;inset:0;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 14px, rgba(150,180,255,.10) 14px 18px),
+    repeating-linear-gradient(0deg, transparent 0 14px, rgba(150,180,255,.10) 14px 18px)}
+
+/* AI scan ring over junction */
+.aiscan{position:absolute;left:50%;top:50%;width:240px;height:240px;transform:translate(-50%,-50%);
+  border-radius:50%;border:2px solid rgba(43,229,255,.5);opacity:0;pointer-events:none}
+.aiscan.on{opacity:1;animation:scanring 2.4s ease-out infinite}
+@keyframes scanring{0%{transform:translate(-50%,-50%) scale(.55);opacity:.7}100%{transform:translate(-50%,-50%) scale(1.5);opacity:0}}
+.aiscan.on::after{content:"";position:absolute;inset:0;border-radius:50%;border:2px solid rgba(43,229,255,.35);
+  animation:scanring 2.4s ease-out infinite;animation-delay:1.2s}
+
+/* traffic signals (one per approach, at the stop line) */
+.sig{position:absolute;width:26px;height:26px;border-radius:50%;transform:translate(-50%,-50%);z-index:9;
+  background:#0a1130;border:2px solid rgba(120,160,255,.3);display:grid;place-items:center;
+  box-shadow:0 4px 12px rgba(0,0,0,.5)}
+.sig i{width:13px;height:13px;border-radius:50%;background:#33406e;transition:background .25s, box-shadow .25s}
+.sig.green i{background:var(--ok);box-shadow:0 0 14px var(--ok)}
+.sig.red i{background:var(--danger);box-shadow:0 0 14px var(--danger)}
+.sig.amber i{background:var(--warn);box-shadow:0 0 14px var(--warn)}
+
+/* ===== cars ===== */
+.car{position:absolute;width:30px;height:16px;border-radius:5px;transform:translate(-50%,-50%) rotate(var(--r,0deg));
+  will-change:left,top;z-index:6;box-shadow:0 0 9px rgba(0,0,0,.5)}
+.car::before{content:"";position:absolute;left:5px;right:9px;top:3px;bottom:3px;border-radius:3px;background:rgba(8,16,36,.5)}
+.car .tr{position:absolute;top:50%;height:5px;width:26px;border-radius:4px;transform:translateY(-50%);
+  filter:blur(1px);opacity:.5;pointer-events:none}
+.car.NS{--col:#7fdcff;--col2:#2B8FFF} .car.EW{--col:#ffd27f;--col2:#FF9E3D}
+.car{background:linear-gradient(90deg,var(--col2),var(--col))}
+.car .tr{background:linear-gradient(90deg,transparent,var(--col));right:28px}
+.car.stopped{filter:saturate(.7) brightness(.86)}
+/* crashed cars (no-AI pile-up) — red flash + violent jitter */
+.car.crashed{background:linear-gradient(90deg,#ff4d4d,#ffb05a) !important;
+  box-shadow:0 0 16px rgba(255,77,77,.95),0 0 4px #fff;z-index:8;
+  animation:crashjit .1s steps(2) infinite}
+.car.crashed::after{content:"";position:absolute;left:50%;top:50%;width:26px;height:26px;transform:translate(-50%,-50%);
+  border-radius:50%;background:radial-gradient(closest-side,rgba(255,210,120,.9),transparent 70%);
+  animation:crashflash .5s ease-out infinite}
+@keyframes crashjit{0%{transform:translate(-50%,-50%) rotate(calc(var(--r,0deg) + 7deg))}100%{transform:translate(-50%,-50%) rotate(calc(var(--r,0deg) - 7deg))}}
+@keyframes crashflash{0%{opacity:.9;transform:translate(-50%,-50%) scale(.5)}100%{opacity:0;transform:translate(-50%,-50%) scale(1.6)}}
+
+/* ===== HUD (shared shell) ===== */
+.hud-top{position:absolute;left:0;right:0;top:0;display:flex;justify-content:space-between;align-items:flex-start;padding:30px 38px;z-index:30;pointer-events:none}
+.brand{display:flex;align-items:center;gap:14px;pointer-events:auto}
+.brand .mark{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;color:var(--cyan);
+  background:var(--panel);border:1.5px solid color-mix(in oklab,var(--cyan),transparent 50%);box-shadow:0 0 24px rgba(43,229,255,.25)}
+.brand .mark svg{width:26px;height:26px}
+.brand .tt .k{font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:var(--cyan)}
+.brand .tt h1{font-family:'Chakra Petch';font-weight:700;font-size:24px;letter-spacing:.02em;line-height:1.1}
+.back-city{pointer-events:auto;display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:var(--text);
+  font-size:14px;background:var(--panel);border:1px solid var(--panel-edge);border-radius:40px;padding:11px 18px 11px 13px;backdrop-filter:blur(10px);transition:background .2s}
+.back-city:hover{background:rgba(30,40,80,.7)}
+.back-city .a{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;color:var(--cyan);background:color-mix(in oklab,var(--cyan),transparent 80%)}
+.back-city .a svg{width:14px;height:14px}
+
+/* stats cluster (top center) */
+.stats{position:absolute;left:50%;top:28px;transform:translateX(-50%);z-index:30;display:flex;gap:0;
+  background:var(--panel);border:1px solid var(--panel-edge);border-radius:18px;backdrop-filter:blur(14px);overflow:hidden;box-shadow:0 16px 40px rgba(0,0,0,.45)}
+.stats .col{padding:13px 24px;text-align:center;min-width:150px}
+.stats .col+.col{border-left:1px solid var(--panel-edge)}
+.stats .col .k{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--slate)}
+.stats .col .v{font-family:'Space Mono';font-weight:700;font-size:28px;margin-top:4px;line-height:1;color:var(--text)}
+.stats .col .v .u{font-size:12px;color:var(--slate);margin-left:3px;font-family:'Sora'}
+/* congestion meter */
+.cong{padding:13px 22px;display:flex;flex-direction:column;justify-content:center;min-width:184px}
+.cong .k{font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--slate);display:flex;justify-content:space-between;align-items:center}
+.cong .k b{font-family:'Space Mono';font-size:12px;color:var(--text)}
+.cong .bar{margin-top:9px;height:10px;border-radius:6px;background:rgba(120,140,200,.18);overflow:hidden;position:relative}
+.cong .fill{position:absolute;left:0;top:0;bottom:0;border-radius:6px;width:0%;transition:width .4s ease, background .4s ease}
+
+/* state tag */
+.statustag{position:absolute;left:50%;top:150px;transform:translateX(-50%);z-index:31;display:flex;align-items:center;gap:10px;
+  padding:10px 20px;border-radius:40px;font-family:'Chakra Petch';font-weight:600;letter-spacing:.03em;font-size:16px;
+  opacity:0;transition:opacity .3s;pointer-events:none;backdrop-filter:blur(10px)}
+.statustag.show{opacity:1}
+.statustag.flow{background:color-mix(in oklab,var(--ok),transparent 85%);border:1px solid color-mix(in oklab,var(--ok),transparent 55%);color:var(--ok)}
+.statustag.jam{background:color-mix(in oklab,var(--danger),transparent 82%);border:1px solid color-mix(in oklab,var(--danger),transparent 45%);color:#ffd0d0}
+.statustag .ic{width:20px;height:20px} .statustag .ic svg{width:20px;height:20px}
+
+/* phase badge near junction */
+.phasebadge{position:absolute;left:50%;top:calc(50% + 150px);transform:translateX(-50%);z-index:12;
+  font-family:'Space Mono';font-size:12px;letter-spacing:.1em;color:var(--slate);
+  background:var(--panel);border:1px solid var(--panel-edge);border-radius:30px;padding:7px 16px;backdrop-filter:blur(8px);white-space:nowrap}
+.phasebadge b{color:var(--text)}
+
+/* ===== bottom dock (shared) ===== */
+.dock{position:absolute;left:50%;bottom:34px;transform:translateX(-50%);z-index:30;display:flex;align-items:center;gap:16px;
+  padding:16px 20px;border-radius:24px;background:var(--panel);border:1px solid var(--panel-edge);backdrop-filter:blur(16px);box-shadow:0 24px 60px rgba(0,0,0,.5)}
+.aitoggle{display:flex;align-items:center;gap:14px;padding:8px 10px 8px 18px;border-radius:16px;background:rgba(120,160,255,.06);border:1px solid var(--panel-edge)}
+.aitoggle .lbl{display:flex;flex-direction:column;line-height:1.15}
+.aitoggle .lbl .a1{font-family:'Chakra Petch';font-weight:600;font-size:15px;letter-spacing:.04em}
+.aitoggle .lbl .a2{font-size:12px;color:var(--slate)}
+.switch{position:relative;width:74px;height:38px;border-radius:40px;cursor:pointer;flex:none;background:rgba(120,140,200,.25);border:1px solid var(--panel-edge);transition:background .3s,box-shadow .3s}
+.switch.on{background:linear-gradient(120deg,color-mix(in oklab,var(--cyan),white 10%),var(--cyan));box-shadow:0 0 22px rgba(43,229,255,.5)}
+.switch .knob{position:absolute;top:3px;left:3px;width:30px;height:30px;border-radius:50%;background:#fff;box-shadow:0 3px 8px rgba(0,0,0,.4);transition:left .3s cubic-bezier(.3,1.4,.4,1)}
+.switch.on .knob{left:41px}
+.switch .st{position:absolute;top:50%;transform:translateY(-50%);font-size:10px;font-weight:700;font-family:'Space Mono';letter-spacing:.05em}
+.switch .st.l{left:11px;color:#06121f;opacity:0}.switch.on .st.l{opacity:1}
+.switch .st.r{right:9px;color:var(--slate)}.switch.on .st.r{opacity:0}
+
+.btn{display:inline-flex;align-items:center;gap:10px;cursor:pointer;font-family:'Chakra Petch';font-weight:600;font-size:15px;letter-spacing:.03em;
+  border-radius:14px;padding:14px 20px;border:1px solid var(--panel-edge);background:rgba(120,160,255,.08);color:var(--text);transition:transform .12s,background .2s,box-shadow .2s,opacity .2s}
+.btn:hover{background:rgba(120,160,255,.16)} .btn:active{transform:translateY(1px) scale(.985)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn svg{width:18px;height:18px}
+.btn.primary{background:linear-gradient(120deg,color-mix(in oklab,var(--warn),white 12%),var(--warn));color:#2a1606;border:none;box-shadow:0 10px 30px rgba(255,177,85,.4)}
+.btn.primary:hover{box-shadow:0 14px 38px rgba(255,177,85,.55)}
+.btn.primary.active{background:linear-gradient(120deg,color-mix(in oklab,var(--danger),white 12%),var(--danger));color:#2a0606;box-shadow:0 10px 30px rgba(255,107,107,.45)}
+
+/* pilot chip */
+.pilotchip{position:absolute;left:38px;bottom:36px;z-index:29;display:flex;align-items:center;gap:15px;padding:11px 24px 11px 11px;border-radius:50px;
+  background:var(--panel);border:1px solid var(--panel-edge);backdrop-filter:blur(16px);box-shadow:0 16px 40px rgba(0,0,0,.45);
+  animation:chipIn .75s cubic-bezier(.2,1.35,.35,1) both}
+@keyframes chipIn{from{transform:translateY(28px) scale(.88)}to{transform:translateY(0) scale(1)}}
+.pilotchip .pring{width:60px;height:60px;border-radius:50%;flex:none;display:grid;place-items:center;box-shadow:0 0 0 2px var(--cyan),0 0 22px rgba(43,229,255,.55);animation:pilotpulse 2.8s ease-in-out infinite}
+@keyframes pilotpulse{0%,100%{box-shadow:0 0 0 2px var(--cyan),0 0 16px rgba(43,229,255,.4)}50%{box-shadow:0 0 0 2px var(--cyan),0 0 32px rgba(43,229,255,.85)}}
+.pilotchip .pring img{width:54px;height:54px;border-radius:50%;object-fit:cover;object-position:50% 28%;display:block}
+.pilotchip .ptx{line-height:1.12}
+.pilotchip .ptx .pk{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--slate);font-weight:600}
+.pilotchip .ptx .pn{font-family:'Chakra Petch';font-weight:600;font-size:20px;letter-spacing:.03em;color:var(--text)}
+
+@media (prefers-reduced-motion: reduce){
+  .stars i,.aiscan.on,.aiscan.on::after,.pilotchip,.pilotchip .pring{animation:none !important}
+}

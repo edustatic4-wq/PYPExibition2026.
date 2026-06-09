@@ -1,0 +1,227 @@
+/* School 2040 — holographic classroom, full-screen */
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Sora:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap');
+
+:root{
+  --ink:#0B1026; --ink2:#11163A; --text:#EAF2FF; --slate:#7E89B6;
+  --violet:#B14CFF; --cyan:#2BE5FF; --ok:#6EE7A8; --warn:#FFB155; --danger:#FF6B6B; --coral:#FF5E8A;
+  --panel:rgba(20,17,52,.62); --panel-edge:rgba(170,140,255,.22);
+}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{font-family:'Sora',system-ui,sans-serif;color:var(--text);background:#05061a;overflow:hidden;-webkit-font-smoothing:antialiased;user-select:none}
+#root{position:fixed;inset:0}
+
+.stagewrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(130% 90% at 50% -10%,#150f38 0%,#05061a 70%)}
+.stage{position:relative;width:1920px;height:1080px;flex:none;transform-origin:center center;overflow:hidden;
+  background:
+    radial-gradient(80% 60% at 50% 12%, rgba(177,76,255,.16), transparent 60%),
+    radial-gradient(60% 50% at 50% 96%, rgba(43,229,255,.10), transparent 65%),
+    linear-gradient(170deg,#120c34 0%,#0c0a28 55%,#08071f 100%)}
+
+/* dome ceiling ribs */
+.dome{position:absolute;left:50%;top:-6%;width:130%;height:54%;transform:translateX(-50%);
+  border-radius:0 0 50% 50%;border:1.5px solid rgba(170,140,255,.12);border-top:none;
+  background:radial-gradient(120% 100% at 50% 0%, rgba(177,76,255,.10), transparent 62%);pointer-events:none}
+.dome i{position:absolute;left:50%;top:0;width:1.5px;height:100%;background:linear-gradient(180deg,rgba(170,140,255,.28),transparent);transform-origin:top center}
+.dome b{position:absolute;left:0;right:0;border-top:1px solid rgba(170,140,255,.10);border-radius:50%}
+
+/* perspective floor */
+.floor{position:absolute;left:-20%;right:-20%;bottom:0;height:42%;
+  background:
+    repeating-linear-gradient(90deg, transparent 0 118px, rgba(170,140,255,.16) 118px 120px),
+    linear-gradient(180deg, transparent, rgba(177,76,255,.05));
+  transform:perspective(620px) rotateX(64deg);transform-origin:bottom center;
+  mask:linear-gradient(180deg, transparent, #000 40%);opacity:.6}
+.floor::after{content:"";position:absolute;inset:0;
+  background:repeating-linear-gradient(0deg, transparent 0 60px, rgba(170,140,255,.14) 60px 62px)}
+
+/* ambient particles */
+.amb{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.amb i{position:absolute;width:4px;height:4px;border-radius:50%;background:rgba(199,160,255,.8);
+  box-shadow:0 0 8px rgba(177,76,255,.8);animation:floaty var(--d,9s) ease-in-out infinite alternate}
+@keyframes floaty{from{transform:translateY(0) translateX(0);opacity:.25}to{transform:translateY(-30px) translateX(12px);opacity:.85}}
+
+/* ===== stations ===== */
+.stations{position:absolute;left:0;right:0;bottom:188px;height:520px;z-index:5}
+.station{position:absolute;transform:translate(-50%,0);width:230px;display:flex;flex-direction:column;align-items:center;cursor:pointer;
+  --acc:var(--violet)}
+.station .holo{position:relative;width:150px;height:200px;display:flex;align-items:flex-end;justify-content:center}
+/* floating helper figure */
+.fig{position:relative;width:104px;height:150px;animation:bob calc(5s/var(--m,1)) ease-in-out infinite;transition:transform .3s}
+.station:hover .fig{transform:translateY(-8px) scale(1.04)}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.fig .head{position:absolute;left:50%;top:0;transform:translateX(-50%);width:54px;height:54px;border-radius:50%;
+  background:radial-gradient(circle at 42% 36%, color-mix(in oklab,var(--acc),white 35%), var(--acc) 70%, color-mix(in oklab,var(--acc),black 30%));
+  box-shadow:0 0 26px color-mix(in oklab,var(--acc),transparent 35%), inset 0 -6px 12px rgba(0,0,0,.35)}
+.fig .body{position:absolute;left:50%;top:46px;transform:translateX(-50%);width:78px;height:104px;border-radius:42px 42px 16px 16px;
+  background:linear-gradient(180deg, color-mix(in oklab,var(--acc),transparent 30%), color-mix(in oklab,var(--acc),transparent 78%));
+  border:1.5px solid color-mix(in oklab,var(--acc),white 10%);
+  box-shadow:0 0 30px color-mix(in oklab,var(--acc),transparent 55%);
+  -webkit-mask:repeating-linear-gradient(0deg,#000 0 4px,transparent 4px 7px);mask:repeating-linear-gradient(0deg,#000 0 4px,transparent 4px 7px)}
+.fig .ico{position:absolute;left:50%;top:62px;transform:translateX(-50%);color:#fff;z-index:2;filter:drop-shadow(0 0 6px var(--acc))}
+.fig .ico svg{width:42px;height:42px}
+/* projector base */
+.base{position:relative;width:150px;height:34px;margin-top:-6px}
+.base .disc{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:140px;height:30px;border-radius:50%;
+  background:radial-gradient(closest-side, color-mix(in oklab,var(--acc),transparent 40%), transparent 72%);
+  border:1.5px solid color-mix(in oklab,var(--acc),transparent 50%)}
+.base .beam{position:absolute;left:50%;bottom:8px;transform:translateX(-50%);width:96px;height:150px;
+  background:linear-gradient(0deg, color-mix(in oklab,var(--acc),transparent 55%), transparent 75%);
+  clip-path:polygon(34% 100%,66% 100%,100% 0,0 0);opacity:.4;pointer-events:none}
+.station .meta{margin-top:14px;text-align:center}
+.station .meta .role{font-family:'Chakra Petch';font-weight:600;font-size:18px;letter-spacing:.01em;color:#fff;
+  text-shadow:0 0 12px color-mix(in oklab,var(--acc),transparent 45%)}
+.station .meta .who{font-size:13px;color:color-mix(in oklab,var(--acc),white 36%);margin-top:2px;letter-spacing:.04em}
+.station .meta .cta{margin-top:9px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--slate);
+  display:inline-flex;align-items:center;gap:7px}
+.station .meta .cta::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--acc);box-shadow:0 0 8px var(--acc);animation:beat 2s ease-in-out infinite}
+@keyframes beat{0%,100%{opacity:.4}50%{opacity:1}}
+
+/* ===== HUD shell ===== */
+.hud-top{position:absolute;left:0;right:0;top:0;display:flex;justify-content:space-between;align-items:flex-start;padding:30px 38px;z-index:30;pointer-events:none}
+.brand{display:flex;align-items:center;gap:14px;pointer-events:auto}
+.brand .mark{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;color:var(--violet);background:var(--panel);border:1.5px solid color-mix(in oklab,var(--violet),transparent 50%);box-shadow:0 0 24px rgba(177,76,255,.28)}
+.brand .mark svg{width:26px;height:26px}
+.brand .tt .k{font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:var(--violet)}
+.brand .tt h1{font-family:'Chakra Petch';font-weight:700;font-size:24px;letter-spacing:.02em;line-height:1.1}
+.back-city{pointer-events:auto;display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:var(--text);font-size:14px;background:var(--panel);border:1px solid var(--panel-edge);border-radius:40px;padding:11px 18px 11px 13px;backdrop-filter:blur(10px);transition:background .2s}
+.back-city:hover{background:rgba(40,30,80,.7)}
+.back-city .a{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;color:var(--violet);background:color-mix(in oklab,var(--violet),transparent 80%)}
+.back-city .a svg{width:14px;height:14px}
+
+.roomtitle{position:absolute;left:50%;top:118px;transform:translateX(-50%);text-align:center;z-index:20;pointer-events:none}
+.roomtitle .k{font-size:12px;letter-spacing:.4em;text-transform:uppercase;color:var(--violet)}
+.roomtitle h2{font-family:'Chakra Petch';font-weight:700;font-size:38px;margin-top:8px;letter-spacing:.01em;text-shadow:0 0 30px rgba(177,76,255,.4)}
+.roomtitle .h{margin-top:8px;font-size:15px;color:var(--slate)}
+
+/* pilot chip */
+.pilotchip{position:absolute;left:38px;bottom:36px;z-index:29;display:flex;align-items:center;gap:15px;padding:11px 24px 11px 11px;border-radius:50px;background:var(--panel);border:1px solid var(--panel-edge);backdrop-filter:blur(16px);box-shadow:0 16px 40px rgba(0,0,0,.45);animation:chipIn .75s cubic-bezier(.2,1.35,.35,1) both}
+@keyframes chipIn{from{transform:translateY(28px) scale(.88)}to{transform:translateY(0) scale(1)}}
+.pilotchip .pring{width:60px;height:60px;border-radius:50%;flex:none;display:grid;place-items:center;box-shadow:0 0 0 2px var(--violet),0 0 22px rgba(177,76,255,.55);animation:pilotpulse 2.8s ease-in-out infinite}
+@keyframes pilotpulse{0%,100%{box-shadow:0 0 0 2px var(--violet),0 0 16px rgba(177,76,255,.4)}50%{box-shadow:0 0 0 2px var(--violet),0 0 32px rgba(177,76,255,.85)}}
+.pilotchip .pring img{width:54px;height:54px;border-radius:50%;object-fit:cover;object-position:50% 24%;display:block}
+.pilotchip .ptx .pk{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--slate);font-weight:600}
+.pilotchip .ptx .pn{font-family:'Chakra Petch';font-weight:600;font-size:20px;letter-spacing:.03em}
+
+/* ===== focus overlay ===== */
+.scrim{position:absolute;inset:0;z-index:40;background:rgba(6,6,22,.6);backdrop-filter:blur(5px);opacity:0;pointer-events:none;transition:opacity .4s}
+.scrim.show{opacity:1;pointer-events:auto}
+.focus{position:absolute;left:50%;top:50%;z-index:45;width:1180px;max-width:94%;transform:translate(-50%,-46%);opacity:0;pointer-events:none;
+  transition:opacity .45s, transform .5s cubic-bezier(.2,.9,.2,1)}
+.focus.show{opacity:1;pointer-events:auto;transform:translate(-50%,-50%)}
+.fcard{position:relative;display:grid;grid-template-columns:360px 1fr;gap:0;border-radius:28px;overflow:hidden;
+  background:linear-gradient(180deg, rgba(28,20,64,.85), rgba(14,11,38,.9));backdrop-filter:blur(26px);
+  border:1px solid var(--panel-edge);box-shadow:0 50px 130px rgba(0,0,0,.6), 0 0 70px color-mix(in oklab,var(--acc,var(--violet)),transparent 80%);
+  --acc:var(--violet)}
+.fclose{position:absolute;right:18px;top:18px;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;cursor:pointer;color:var(--slate);z-index:6;background:rgba(170,140,255,.08);border:1px solid var(--panel-edge);transition:.2s}
+.fclose:hover{color:#fff;background:rgba(170,140,255,.18)}
+.fclose svg{width:18px;height:18px}
+
+/* hologram stage (left) */
+.holostage{position:relative;padding:44px 30px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:radial-gradient(80% 60% at 50% 30%, color-mix(in oklab,var(--acc),transparent 80%), transparent 70%);
+  border-right:1px solid var(--panel-edge);overflow:hidden}
+.holostage .bigfig{position:relative;width:200px;height:280px;animation:bob 5s ease-in-out infinite;transform-origin:bottom center}
+.holostage.materialize .bigfig{animation:materialize .7s cubic-bezier(.2,1.3,.35,1) , bob 5s ease-in-out infinite .7s}
+@keyframes materialize{0%{opacity:0;transform:translateY(20px) scale(.6)}100%{opacity:1;transform:translateY(0) scale(1)}}
+.holostage .bigfig .head{position:absolute;left:50%;top:0;transform:translateX(-50%);width:104px;height:104px;border-radius:50%;
+  background:radial-gradient(circle at 42% 36%, color-mix(in oklab,var(--acc),white 35%), var(--acc) 70%, color-mix(in oklab,var(--acc),black 30%));
+  box-shadow:0 0 44px color-mix(in oklab,var(--acc),transparent 30%), inset 0 -10px 20px rgba(0,0,0,.35)}
+.holostage .bigfig .face{position:absolute;left:50%;top:34px;transform:translateX(-50%);display:flex;gap:14px}
+.holostage .bigfig .face i{width:11px;height:14px;border-radius:50%;background:#0b0a26;box-shadow:0 0 6px rgba(0,0,0,.4)}
+.holostage .bigfig .smile{position:absolute;left:50%;top:64px;transform:translateX(-50%);width:30px;height:14px;border-radius:0 0 20px 20px;border:2.5px solid #0b0a26;border-top:none}
+.holostage .bigfig .body{position:absolute;left:50%;top:96px;transform:translateX(-50%);width:150px;height:184px;border-radius:74px 74px 22px 22px;
+  background:linear-gradient(180deg, color-mix(in oklab,var(--acc),transparent 26%), color-mix(in oklab,var(--acc),transparent 80%));
+  border:1.5px solid color-mix(in oklab,var(--acc),white 12%);box-shadow:0 0 40px color-mix(in oklab,var(--acc),transparent 50%);
+  -webkit-mask:repeating-linear-gradient(0deg,#000 0 5px,transparent 5px 9px);mask:repeating-linear-gradient(0deg,#000 0 5px,transparent 5px 9px)}
+.holostage .bigfig .ico{position:absolute;left:50%;top:128px;transform:translateX(-50%);color:#fff;z-index:3;filter:drop-shadow(0 0 8px var(--acc))}
+.holostage .bigfig .ico svg{width:60px;height:60px}
+.holostage .pad{position:absolute;left:50%;bottom:30px;transform:translateX(-50%);width:220px;height:34px;border-radius:50%;
+  background:radial-gradient(closest-side, color-mix(in oklab,var(--acc),transparent 40%), transparent 72%);border:1.5px solid color-mix(in oklab,var(--acc),transparent 55%)}
+.holostage .who{position:absolute;left:0;right:0;bottom:0;text-align:center;padding:14px;font-family:'Chakra Petch';font-weight:600;font-size:17px;color:#fff}
+.holostage .who b{display:block;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:color-mix(in oklab,var(--acc),white 30%);font-weight:600}
+
+/* body (right) */
+.fbody{padding:44px 46px 40px;display:flex;flex-direction:column;min-height:540px}
+.fbody .role{font-family:'Chakra Petch';font-weight:700;font-size:34px;line-height:1.05;letter-spacing:.01em}
+.fbody .story{margin-top:14px;font-size:18px;line-height:1.55;color:#dcd6ff;max-width:52ch}
+.fbody .widget{margin-top:26px;flex:1;display:flex;flex-direction:column}
+
+/* generic widget bits */
+.qcard{background:rgba(170,140,255,.06);border:1px solid var(--panel-edge);border-radius:18px;padding:24px 26px}
+.qhead{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:6px}
+.qhead .lvl{font-family:'Space Mono';font-size:12px;letter-spacing:.1em;color:var(--violet);background:color-mix(in oklab,var(--violet),transparent 84%);padding:5px 12px;border-radius:20px}
+.qq{font-family:'Chakra Petch';font-weight:700;font-size:42px;letter-spacing:.02em;margin:6px 0 4px}
+.opts{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:18px}
+.opt{font-family:'Space Mono';font-weight:700;font-size:22px;padding:16px;border-radius:14px;cursor:pointer;text-align:center;
+  background:rgba(170,140,255,.08);border:1.5px solid var(--panel-edge);color:var(--text);transition:transform .12s,background .2s,border-color .2s}
+.opt:hover{background:rgba(170,140,255,.16)} .opt:active{transform:scale(.97)}
+.opt.right{background:color-mix(in oklab,var(--ok),transparent 78%);border-color:var(--ok);color:#dfffe9}
+.opt.wrong{background:color-mix(in oklab,var(--danger),transparent 80%);border-color:var(--danger);color:#ffdede}
+.opt.disabled{pointer-events:none;opacity:.85}
+.feedback{margin-top:16px;font-size:16px;line-height:1.5;min-height:48px;display:flex;align-items:center;gap:10px}
+.feedback.good{color:var(--ok)} .feedback.soft{color:var(--warn)}
+.feedback .em{font-size:22px}
+
+/* mastery bar */
+.mastery{margin-top:20px}
+.mastery .ml{display:flex;justify-content:space-between;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--slate);margin-bottom:8px}
+.mastery .ml b{font-family:'Space Mono';color:var(--text)}
+.mbar{height:14px;border-radius:8px;background:rgba(170,140,255,.14);overflow:hidden;position:relative}
+.mfill{position:absolute;left:0;top:0;bottom:0;border-radius:8px;width:0;background:linear-gradient(90deg,var(--violet),var(--cyan));transition:width .6s cubic-bezier(.2,.9,.2,1);box-shadow:0 0 16px rgba(177,76,255,.6)}
+
+/* chips & buttons (shared in widgets) */
+.btn{display:inline-flex;align-items:center;gap:10px;cursor:pointer;font-family:'Chakra Petch';font-weight:600;font-size:15px;letter-spacing:.02em;border-radius:13px;padding:13px 20px;border:1px solid var(--panel-edge);background:rgba(170,140,255,.08);color:var(--text);transition:transform .12s,background .2s,box-shadow .2s,opacity .2s}
+.btn:hover{background:rgba(170,140,255,.16)} .btn:active{transform:translateY(1px) scale(.985)} .btn:disabled{opacity:.4;cursor:not-allowed}
+.btn svg{width:18px;height:18px}
+.btn.primary{background:linear-gradient(120deg,color-mix(in oklab,var(--violet),white 12%),var(--violet));color:#1a0830;border:none;box-shadow:0 10px 30px rgba(177,76,255,.4)}
+.btn.primary:hover{box-shadow:0 14px 38px rgba(177,76,255,.55)}
+.btnrow{display:flex;gap:12px;margin-top:auto;padding-top:22px}
+
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:6px}
+.chip{font-size:15px;padding:11px 18px;border-radius:30px;cursor:pointer;background:rgba(170,140,255,.08);border:1.5px solid var(--panel-edge);color:var(--text);transition:.18s;display:inline-flex;align-items:center;gap:8px}
+.chip:hover{background:rgba(170,140,255,.16)}
+.chip.sel{background:color-mix(in oklab,var(--violet),transparent 72%);border-color:var(--violet);color:#fff;box-shadow:0 0 18px color-mix(in oklab,var(--violet),transparent 65%)}
+.chip .em{font-size:17px}
+
+/* language cards */
+.langrow{display:flex;gap:14px;margin-top:8px}
+.langcard{flex:1;border-radius:16px;padding:18px;text-align:center;cursor:pointer;background:rgba(170,140,255,.07);border:1.5px solid var(--panel-edge);transition:.18s}
+.langcard:hover{background:rgba(170,140,255,.15)}
+.langcard.right{background:color-mix(in oklab,var(--ok),transparent 78%);border-color:var(--ok)}
+.langcard.wrong{background:color-mix(in oklab,var(--danger),transparent 82%);border-color:var(--danger)}
+.langcard .fl{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--slate);margin-bottom:8px}
+.langcard .wd{font-family:'Chakra Petch';font-weight:600;font-size:26px}
+
+/* read-aloud */
+.reader{font-size:27px;line-height:1.7;font-weight:500;letter-spacing:.01em;color:#cfc7f5}
+.reader w{display:inline;border-radius:6px;padding:1px 3px;transition:background .15s,color .15s}
+.reader w.on{background:var(--violet);color:#fff;box-shadow:0 0 16px color-mix(in oklab,var(--violet),transparent 50%)}
+.reader w.done{color:#fff}
+
+/* hint stepper */
+.problem{font-size:21px;line-height:1.5;color:#e6e1ff;background:rgba(170,140,255,.06);border:1px solid var(--panel-edge);border-radius:14px;padding:18px 20px}
+.hints{margin-top:16px;display:flex;flex-direction:column;gap:10px}
+.hintline{display:flex;gap:12px;align-items:flex-start;font-size:16px;line-height:1.5;color:#dcd6ff;
+  background:rgba(170,140,255,.05);border:1px solid var(--panel-edge);border-radius:12px;padding:13px 16px;
+  animation:hintin .4s cubic-bezier(.2,.9,.2,1) both}
+@keyframes hintin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.hintline .n{flex:none;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-family:'Space Mono';font-size:12px;
+  background:color-mix(in oklab,var(--violet),transparent 75%);color:var(--violet)}
+.hintline.answer .n{background:var(--ok);color:#06210f}
+.plan{margin-top:8px;display:flex;flex-direction:column;gap:12px}
+.planstop{display:flex;gap:14px;align-items:center;background:rgba(170,140,255,.06);border:1px solid var(--panel-edge);border-radius:14px;padding:14px 18px;animation:hintin .45s cubic-bezier(.2,.9,.2,1) both}
+.planstop .t{flex:none;width:40px;height:40px;border-radius:11px;display:grid;place-items:center;background:color-mix(in oklab,var(--violet),transparent 78%);color:var(--violet)}
+.planstop .t svg{width:22px;height:22px}
+.planstop .pt{font-family:'Chakra Petch';font-weight:600;font-size:16px}
+.planstop .pd{font-size:13.5px;color:var(--slate);margin-top:2px}
+
+/* confetti */
+.confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:8}
+.confetti i{position:absolute;width:9px;height:14px;border-radius:2px;animation:fall var(--d,1.4s) ease-in forwards}
+@keyframes fall{0%{transform:translateY(-20px) rotate(0);opacity:1}100%{transform:translateY(560px) rotate(540deg);opacity:0}}
+
+@media (prefers-reduced-motion: reduce){
+  .fig,.amb i,.holostage .bigfig,.station .meta .cta::before,.pilotchip,.pilotchip .pring,.confetti i{animation:none !important}
+}

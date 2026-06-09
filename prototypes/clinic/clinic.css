@@ -1,0 +1,167 @@
+/* Dr Ali — AI clinic body scan, full-screen */
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Sora:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap');
+
+:root{
+  --ink:#0B1026; --ink2:#11163A; --text:#EAF2FF; --slate:#8493b8;
+  --coral:#FF5E8A; --teal:#2BE5FF; --ok:#6EE7A8; --warn:#FFB155;
+  --panel:rgba(16,22,46,.6); --panel-edge:rgba(150,190,255,.18);
+}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{font-family:'Sora',system-ui,sans-serif;color:var(--text);background:#05081c;overflow:hidden;-webkit-font-smoothing:antialiased;user-select:none}
+#root{position:fixed;inset:0}
+
+.stagewrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:radial-gradient(130% 90% at 50% -10%,#0c1432 0%,#05081c 70%)}
+.stage{position:relative;width:1920px;height:1080px;flex:none;transform-origin:center center;overflow:hidden;
+  background:
+    radial-gradient(60% 50% at 50% 38%, rgba(43,229,255,.10), transparent 62%),
+    radial-gradient(50% 50% at 22% 86%, rgba(255,94,138,.08), transparent 60%),
+    linear-gradient(170deg,#0c1230 0%,#0a1028 55%,#070a20 100%)}
+.bg-grid{position:absolute;inset:0;opacity:.4;background-image:linear-gradient(rgba(150,190,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(150,190,255,.05) 1px,transparent 1px);background-size:64px 64px;mask:radial-gradient(120% 90% at 50% 45%,#000 55%,transparent 100%)}
+/* clinic floor */
+.floor{position:absolute;left:-15%;right:-15%;bottom:0;height:34%;background:linear-gradient(180deg,transparent,rgba(43,229,255,.05));
+  transform:perspective(700px) rotateX(66deg);transform-origin:bottom center;
+  background-image:repeating-linear-gradient(90deg,transparent 0 120px,rgba(150,190,255,.12) 120px 122px);mask:linear-gradient(180deg,transparent,#000 50%);opacity:.5}
+
+/* ===== HUD shell ===== */
+.hud-top{position:absolute;left:0;right:0;top:0;display:flex;justify-content:space-between;align-items:flex-start;padding:30px 38px;z-index:30;pointer-events:none}
+.brand{display:flex;align-items:center;gap:14px;pointer-events:auto}
+.brand .mark{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;color:var(--coral);background:var(--panel);border:1.5px solid color-mix(in oklab,var(--coral),transparent 50%);box-shadow:0 0 24px rgba(255,94,138,.28)}
+.brand .mark svg{width:26px;height:26px}
+.brand .tt .k{font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:var(--coral)}
+.brand .tt h1{font-family:'Chakra Petch';font-weight:700;font-size:24px;letter-spacing:.02em;line-height:1.1}
+.back-city{pointer-events:auto;display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:var(--text);font-size:14px;background:var(--panel);border:1px solid var(--panel-edge);border-radius:40px;padding:11px 18px 11px 13px;backdrop-filter:blur(10px);transition:background .2s}
+.back-city:hover{background:rgba(34,44,84,.7)}
+.back-city .a{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;color:var(--coral);background:color-mix(in oklab,var(--coral),transparent 80%)}
+.back-city .a svg{width:14px;height:14px}
+
+/* ===== human doctor (Dr Ali) ===== */
+.doctor{position:absolute;left:110px;bottom:140px;width:320px;z-index:6;text-align:center}
+.human-doc{position:relative;width:320px;height:560px;margin:0 auto}
+.human-doc img{position:absolute;left:50%;bottom:56px;transform:translateX(-50%);height:500px;width:auto;display:block;
+  filter:drop-shadow(0 0 26px rgba(255,94,138,.5)) drop-shadow(0 10px 24px rgba(0,0,0,.55));
+  animation:breathe 4.6s ease-in-out infinite}
+@keyframes breathe{0%,100%{transform:translateX(-50%) translateY(0) scale(1)}50%{transform:translateX(-50%) translateY(-4px) scale(1.012)}}
+.human-doc .hd-glow{position:absolute;left:50%;bottom:46px;transform:translateX(-50%);width:250px;height:60px;border-radius:50%;
+  background:radial-gradient(closest-side, rgba(255,94,138,.34), transparent 72%);filter:blur(5px)}
+.doctor .docline{position:relative;margin-top:4px}
+.bot{position:relative;width:230px;height:330px;margin:0 auto;animation:botbob 5s ease-in-out infinite}
+@keyframes botbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.bot .antenna{position:absolute;left:50%;top:-18px;transform:translateX(-50%);width:3px;height:22px;background:color-mix(in oklab,var(--teal),transparent 30%)}
+.bot .antenna::after{content:"";position:absolute;left:50%;top:-7px;transform:translateX(-50%);width:11px;height:11px;border-radius:50%;background:var(--coral);box-shadow:0 0 14px var(--coral);animation:beat 2s ease-in-out infinite}
+@keyframes beat{0%,100%{opacity:.5}50%{opacity:1}}
+.bot .headb{position:absolute;left:50%;top:6px;transform:translateX(-50%);width:150px;height:120px;border-radius:32px;
+  background:linear-gradient(180deg,#eaf3ff,#bcd0ec);box-shadow:inset 0 -10px 20px rgba(120,150,200,.4),0 10px 30px rgba(0,0,0,.4)}
+.bot .visor{position:absolute;left:50%;top:34px;transform:translateX(-50%);width:120px;height:66px;border-radius:24px;
+  background:radial-gradient(120% 120% at 50% 30%, #0a1840, #06122e);border:2px solid color-mix(in oklab,var(--teal),transparent 50%);
+  box-shadow:0 0 20px color-mix(in oklab,var(--teal),transparent 60%),inset 0 0 18px rgba(43,229,255,.15);overflow:hidden}
+.bot .eye{position:absolute;top:24px;width:18px;height:18px;border-radius:50%;background:var(--teal);box-shadow:0 0 14px var(--teal);transition:.3s}
+.bot .eye.l{left:30px} .bot .eye.r{right:30px}
+.bot.happy .eye{height:9px;border-radius:0 0 18px 18px;top:30px}
+.bot.scan .eye{animation:eyescan 1.2s ease-in-out infinite}
+@keyframes eyescan{0%,100%{transform:translateX(-5px)}50%{transform:translateX(5px)}}
+.bot .body{position:absolute;left:50%;top:128px;transform:translateX(-50%);width:170px;height:170px;border-radius:40px 40px 30px 30px;
+  background:linear-gradient(180deg,#e3edff,#aec4e4);box-shadow:inset 0 -12px 24px rgba(120,150,200,.4),0 12px 30px rgba(0,0,0,.4)}
+.bot .chest{position:absolute;left:50%;top:158px;transform:translateX(-50%);width:64px;height:64px;border-radius:50%;
+  background:radial-gradient(circle at 40% 36%, color-mix(in oklab,var(--coral),white 20%), var(--coral));box-shadow:0 0 24px color-mix(in oklab,var(--coral),transparent 40%);display:grid;place-items:center;color:#fff}
+.bot .chest svg{width:34px;height:34px}
+.bot .arm{position:absolute;top:150px;width:30px;height:120px;border-radius:16px;background:linear-gradient(180deg,#dbe7fb,#a8bee0)}
+.bot .arm.l{left:6px;transform-origin:top center;transform:rotate(10deg)}
+.bot .arm.r{right:6px;transform-origin:top center;transform:rotate(-10deg)}
+.bot.happy .arm.r{animation:wave 1.6s ease-in-out infinite}
+@keyframes wave{0%,100%{transform:rotate(-10deg)}50%{transform:rotate(-38deg)}}
+.docline{margin-top:18px;background:var(--panel);border:1px solid var(--panel-edge);border-radius:18px;padding:14px 20px;backdrop-filter:blur(10px);
+  font-size:16px;line-height:1.4;color:#e7eeff;position:relative;min-height:54px;display:flex;align-items:center;justify-content:center;box-shadow:0 12px 30px rgba(0,0,0,.4)}
+.docline::before{content:"";position:absolute;left:50%;top:-9px;transform:translateX(-50%);border:8px solid transparent;border-bottom-color:var(--panel-edge)}
+.docline b{color:var(--coral)}
+
+/* ===== patient hologram (center) ===== */
+.scanzone{position:absolute;left:50%;top:150px;transform:translateX(-50%);width:520px;height:720px;z-index:5}
+.body-h{position:absolute;left:50%;top:20px;transform:translateX(-50%);width:240px;height:640px;
+  filter:drop-shadow(0 0 26px rgba(43,229,255,.45))}
+.bp{position:absolute;background:linear-gradient(180deg, color-mix(in oklab,var(--teal),transparent 35%), color-mix(in oklab,var(--teal),transparent 72%));
+  border:1.5px solid color-mix(in oklab,var(--teal),white 8%);
+  -webkit-mask:repeating-linear-gradient(0deg,#000 0 4px,transparent 4px 8px);mask:repeating-linear-gradient(0deg,#000 0 4px,transparent 4px 8px)}
+.bp.head{left:50%;top:0;transform:translateX(-50%);width:84px;height:90px;border-radius:42px}
+.bp.neck{left:50%;top:84px;transform:translateX(-50%);width:34px;height:24px}
+.bp.torso{left:50%;top:104px;transform:translateX(-50%);width:150px;height:220px;border-radius:60px 60px 40px 40px}
+.bp.arm{top:120px;width:38px;height:200px;border-radius:24px}
+.bp.arm.l{left:14px;transform:rotate(6deg)} .bp.arm.r{right:14px;transform:rotate(-6deg)}
+.bp.leg{top:320px;width:56px;height:300px;border-radius:28px 28px 22px 22px}
+.bp.leg.l{left:62px} .bp.leg.r{right:62px}
+.scanpad{position:absolute;left:50%;bottom:24px;transform:translateX(-50%);width:330px;height:46px;border-radius:50%;
+  background:radial-gradient(closest-side, color-mix(in oklab,var(--teal),transparent 35%), transparent 72%);border:1.5px solid color-mix(in oklab,var(--teal),transparent 55%)}
+
+/* scan line */
+.scanline{position:absolute;left:50%;transform:translateX(-50%);width:330px;height:0;top:20px;z-index:7;opacity:0;transition:opacity .3s}
+.scanline.on{opacity:1}
+.scanline::before{content:"";position:absolute;left:0;right:0;top:-2px;height:4px;border-radius:4px;background:linear-gradient(90deg,transparent,var(--teal),transparent);box-shadow:0 0 24px var(--teal),0 0 50px var(--teal)}
+.scanline .glowband{position:absolute;left:0;right:0;top:-60px;height:60px;background:linear-gradient(180deg,transparent,color-mix(in oklab,var(--teal),transparent 80%));}
+
+/* markers */
+.marker{position:absolute;transform:translate(-50%,-50%);z-index:8;pointer-events:none}
+.marker .dot{width:16px;height:16px;border-radius:50%;background:var(--coral);box-shadow:0 0 0 0 color-mix(in oklab,var(--coral),transparent 30%);opacity:0;transform:scale(.4);transition:opacity .3s,transform .4s cubic-bezier(.2,1.4,.3,1)}
+.marker.on .dot{opacity:1;transform:scale(1);animation:mpulse 1.8s ease-out infinite}
+@keyframes mpulse{0%{box-shadow:0 0 0 0 color-mix(in oklab,var(--coral),transparent 30%)}100%{box-shadow:0 0 0 22px transparent}}
+.marker .ln{position:absolute;top:50%;left:8px;height:1.5px;background:color-mix(in oklab,var(--coral),transparent 40%);width:0;transition:width .5s ease}
+.marker.on .ln{width:var(--lnw,80px)}
+
+/* ===== right panel ===== */
+.panel{position:absolute;right:60px;top:160px;width:430px;z-index:6;display:flex;flex-direction:column;gap:16px}
+.panel .ph{font-family:'Chakra Petch';font-weight:600;font-size:15px;letter-spacing:.16em;text-transform:uppercase;color:var(--slate);display:flex;align-items:center;gap:10px}
+.panel .ph b{width:7px;height:7px;border-radius:50%;background:var(--teal);box-shadow:0 0 8px var(--teal)}
+.findings{display:flex;flex-direction:column;gap:12px;min-height:60px}
+.finding{display:flex;gap:14px;align-items:flex-start;background:var(--panel);border:1px solid var(--panel-edge);border-radius:16px;padding:15px 18px;backdrop-filter:blur(10px);
+  opacity:0;transform:translateX(20px);transition:opacity .5s,transform .5s cubic-bezier(.2,.9,.2,1)}
+.finding.show{opacity:1;transform:none}
+.finding .fi{flex:none;width:42px;height:42px;border-radius:12px;display:grid;place-items:center;color:var(--coral);background:color-mix(in oklab,var(--coral),transparent 84%)}
+.finding .fi svg{width:24px;height:24px}
+.finding .ft{font-family:'Chakra Petch';font-weight:600;font-size:17px;display:flex;align-items:center;gap:8px}
+.finding .ft .ok{font-size:12px;color:var(--ok);background:color-mix(in oklab,var(--ok),transparent 84%);padding:2px 9px;border-radius:20px;letter-spacing:.04em}
+.finding .fd{font-size:14.5px;color:#cdd7f0;margin-top:4px;line-height:1.45}
+/* ecg inside heart finding */
+.ecg{margin-top:10px;height:40px;width:100%;background:rgba(8,16,40,.5);border-radius:10px;overflow:hidden;position:relative}
+.ecg svg{position:absolute;left:0;top:0;height:100%;width:200%}
+.ecg path{fill:none;stroke:var(--coral);stroke-width:2.5;filter:drop-shadow(0 0 5px var(--coral));
+  stroke-dasharray:600;animation:ecgrun 2.4s linear infinite}
+@keyframes ecgrun{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* health index dial */
+.health{background:var(--panel);border:1px solid var(--panel-edge);border-radius:20px;padding:22px;backdrop-filter:blur(12px);display:flex;align-items:center;gap:22px;
+  opacity:0;transform:translateY(14px);transition:opacity .5s,transform .5s;box-shadow:0 16px 40px rgba(0,0,0,.4)}
+.health.show{opacity:1;transform:none}
+.dial{position:relative;width:130px;height:130px;flex:none}
+.dial svg{transform:rotate(-90deg)}
+.dial .num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.dial .num .v{font-family:'Space Mono';font-weight:700;font-size:38px;color:var(--ok)}
+.dial .num .l{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--slate)}
+.dial.pulse{animation:dialpulse 2.4s ease-in-out infinite}
+@keyframes dialpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
+.health .htx .hk{font-family:'Chakra Petch';font-weight:600;font-size:20px}
+.health .htx .hd{font-size:14.5px;color:#cdd7f0;margin-top:6px;line-height:1.45}
+
+/* ===== bottom dock ===== */
+.dock{position:absolute;left:50%;bottom:38px;transform:translateX(-50%);z-index:20;display:flex;align-items:center;gap:16px;
+  background:var(--panel);border:1px solid var(--panel-edge);border-radius:22px;backdrop-filter:blur(16px);padding:16px 20px;box-shadow:0 24px 60px rgba(0,0,0,.5)}
+.scanbtn{display:inline-flex;align-items:center;gap:12px;cursor:pointer;font-family:'Chakra Petch';font-weight:700;font-size:18px;letter-spacing:.03em;border:none;border-radius:15px;padding:16px 30px;color:#2a0613;
+  background:linear-gradient(120deg,color-mix(in oklab,var(--coral),white 14%),var(--coral));box-shadow:0 12px 34px rgba(255,94,138,.45);transition:transform .14s,box-shadow .2s,opacity .2s}
+.scanbtn:hover{transform:translateY(-2px);box-shadow:0 18px 46px rgba(255,94,138,.6)}
+.scanbtn:disabled{opacity:.55;transform:none;cursor:default}
+.scanbtn svg{width:20px;height:20px}
+.btn{display:inline-flex;align-items:center;gap:10px;cursor:pointer;font-family:'Chakra Petch';font-weight:600;font-size:15px;border-radius:14px;padding:15px 20px;border:1px solid var(--panel-edge);background:rgba(150,190,255,.08);color:var(--text);transition:.2s}
+.btn:hover{background:rgba(150,190,255,.16)} .btn:disabled{opacity:.4;cursor:default}
+.btn svg{width:18px;height:18px}
+.progress{font-family:'Space Mono';font-size:13px;color:var(--slate);min-width:120px;text-align:center}
+
+/* pilot chip */
+.pilotchip{position:absolute;left:38px;bottom:36px;z-index:29;display:flex;align-items:center;gap:15px;padding:11px 24px 11px 11px;border-radius:50px;background:var(--panel);border:1px solid var(--panel-edge);backdrop-filter:blur(16px);box-shadow:0 16px 40px rgba(0,0,0,.45);animation:chipIn .75s cubic-bezier(.2,1.35,.35,1) both}
+@keyframes chipIn{from{transform:translateY(28px) scale(.88)}to{transform:translateY(0) scale(1)}}
+.pilotchip .pring{width:60px;height:60px;border-radius:50%;flex:none;display:grid;place-items:center;box-shadow:0 0 0 2px var(--coral),0 0 22px rgba(255,94,138,.55);animation:pilotpulse 2.8s ease-in-out infinite}
+@keyframes pilotpulse{0%,100%{box-shadow:0 0 0 2px var(--coral),0 0 16px rgba(255,94,138,.4)}50%{box-shadow:0 0 0 2px var(--coral),0 0 32px rgba(255,94,138,.85)}}
+.pilotchip .pring img{width:54px;height:54px;border-radius:50%;object-fit:cover;object-position:50% 26%;display:block}
+.pilotchip .ptx .pk{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--slate);font-weight:600}
+.pilotchip .ptx .pn{font-family:'Chakra Petch';font-weight:600;font-size:20px;letter-spacing:.03em}
+
+@media (prefers-reduced-motion: reduce){
+  .bot,.bot .antenna::after,.marker.on .dot,.ecg path,.dial.pulse,.pilotchip,.pilotchip .pring{animation:none !important}
+}

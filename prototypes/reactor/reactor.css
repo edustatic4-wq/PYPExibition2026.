@@ -1,0 +1,166 @@
+/* Play Reactor — AI level generator, full-screen arcade */
+@import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Sora:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap');
+
+:root{
+  --ink:#0B1026; --ink2:#11163A; --text:#EAF2FF; --slate:#7E89B6;
+  --violet:#B14CFF; --cyan:#2BE5FF; --ok:#6EE7A8; --warn:#FFB155; --danger:#FF6B6B; --coral:#FF5E8A;
+  --acc:#B14CFF; --acc2:#2BE5FF;
+  --panel:rgba(20,17,52,.62); --panel-edge:rgba(170,140,255,.22);
+}
+*{box-sizing:border-box;margin:0}
+html,body{height:100%}
+body{font-family:'Sora',system-ui,sans-serif;color:var(--text);background:#05061a;overflow:hidden;-webkit-font-smoothing:antialiased;user-select:none}
+#root{position:fixed;inset:0}
+
+.stagewrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:radial-gradient(130% 90% at 50% -10%,#160f3a 0%,#05061a 70%)}
+.stage{position:relative;width:1920px;height:1080px;flex:none;transform-origin:center center;overflow:hidden;
+  background:
+    radial-gradient(70% 50% at 50% 42%, color-mix(in oklab,var(--acc),transparent 86%), transparent 60%),
+    linear-gradient(170deg,#120c34 0%,#0c0a28 55%,#08071f 100%)}
+.bg-grid{position:absolute;inset:0;opacity:.4;background-image:linear-gradient(rgba(170,140,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(170,140,255,.06) 1px,transparent 1px);background-size:60px 60px;mask:radial-gradient(120% 90% at 50% 45%,#000 55%,transparent 100%)}
+.stars{position:absolute;inset:0;pointer-events:none}
+.stars i{position:absolute;width:2px;height:2px;border-radius:50%;background:#cfe4ff;animation:tw var(--d,4s) ease-in-out infinite alternate}
+@keyframes tw{from{opacity:.12}to{opacity:.7}}
+
+/* ===== HUD shell ===== */
+.hud-top{position:absolute;left:0;right:0;top:0;display:flex;justify-content:space-between;align-items:flex-start;padding:30px 38px;z-index:30;pointer-events:none}
+.brand{display:flex;align-items:center;gap:14px;pointer-events:auto}
+.brand .mark{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;color:var(--acc);background:var(--panel);border:1.5px solid color-mix(in oklab,var(--acc),transparent 50%);box-shadow:0 0 24px rgba(177,76,255,.28)}
+.brand .mark svg{width:26px;height:26px}
+.brand .tt .k{font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:var(--acc)}
+.brand .tt h1{font-family:'Chakra Petch';font-weight:700;font-size:24px;letter-spacing:.02em;line-height:1.1}
+.back-city{pointer-events:auto;display:inline-flex;align-items:center;gap:9px;text-decoration:none;color:var(--text);font-size:14px;background:var(--panel);border:1px solid var(--panel-edge);border-radius:40px;padding:11px 18px 11px 13px;backdrop-filter:blur(10px);transition:background .2s}
+.back-city:hover{background:rgba(40,30,80,.7)}
+.back-city .a{width:24px;height:24px;border-radius:50%;display:grid;place-items:center;color:var(--acc);background:color-mix(in oklab,var(--acc),transparent 80%)}
+.back-city .a svg{width:14px;height:14px}
+
+/* ===== level stage ===== */
+.level{position:absolute;left:60px;right:60px;top:150px;height:600px;border-radius:24px;overflow:hidden;
+  background:linear-gradient(180deg, rgba(12,10,40,.6), rgba(8,7,28,.7));border:1px solid var(--panel-edge);
+  box-shadow:inset 0 0 80px rgba(0,0,0,.5), 0 24px 60px rgba(0,0,0,.4)}
+.level .parallax{position:absolute;inset:0;opacity:.5}
+.level .pkmtn{position:absolute;bottom:0;width:300px;height:240px;background:linear-gradient(180deg,color-mix(in oklab,var(--acc),transparent 70%),transparent);clip-path:polygon(50% 0,100% 100%,0 100%);opacity:.4}
+
+/* reactor core */
+.reactor{position:absolute;left:50%;top:48%;transform:translate(-50%,-50%);width:160px;height:160px;border-radius:50%;z-index:5;
+  display:grid;place-items:center;transition:opacity .5s, transform .5s}
+.reactor .core{width:70px;height:70px;border-radius:50%;background:radial-gradient(circle at 40% 36%, #fff, var(--acc2) 45%, var(--acc) 100%);
+  box-shadow:0 0 50px var(--acc),0 0 100px color-mix(in oklab,var(--acc),transparent 40%);animation:corepulse 2.2s ease-in-out infinite}
+@keyframes corepulse{0%,100%{transform:scale(.92)}50%{transform:scale(1.08)}}
+.reactor .ring{position:absolute;border-radius:50%;border:2px solid color-mix(in oklab,var(--acc2),transparent 55%)}
+.reactor .ring.r1{inset:12px;animation:spin 6s linear infinite}
+.reactor .ring.r2{inset:30px;border-style:dashed;animation:spin 4s linear infinite reverse}
+@keyframes spin{to{transform:rotate(360deg)}}
+.reactor.charging .core{animation:charge 1.3s ease-in forwards}
+@keyframes charge{0%{transform:scale(1)}70%{transform:scale(1.5);box-shadow:0 0 90px var(--acc),0 0 160px var(--acc2)}100%{transform:scale(.2);opacity:0}}
+.reactor.hidden{opacity:0;transform:translate(-50%,-50%) scale(.4);pointer-events:none}
+/* charge particles */
+.chargep{position:absolute;width:7px;height:7px;border-radius:50%;background:var(--acc2);box-shadow:0 0 10px var(--acc2);z-index:6}
+
+.hint{position:absolute;left:50%;top:calc(48% + 120px);transform:translateX(-50%);z-index:5;color:var(--slate);font-size:15px;letter-spacing:.04em;transition:opacity .4s}
+
+/* platforms */
+.plat{position:absolute;border-radius:8px;background:linear-gradient(180deg, color-mix(in oklab,var(--acc),transparent 50%), color-mix(in oklab,var(--acc),transparent 78%));
+  border:1.5px solid color-mix(in oklab,var(--acc),white 6%);box-shadow:0 0 22px color-mix(in oklab,var(--acc),transparent 65%), inset 0 2px 0 rgba(255,255,255,.18);
+  transform-origin:center bottom;transition:transform .45s cubic-bezier(.2,1.3,.35,1), opacity .45s}
+.plat.in{transform:scaleY(1);opacity:1}
+.plat.out{transform:scaleY(0);opacity:0}
+.plat .top{position:absolute;left:0;right:0;top:0;height:4px;border-radius:8px 8px 0 0;background:color-mix(in oklab,var(--acc),white 20%);box-shadow:0 0 12px var(--acc)}
+.plat.in{animation:platin .5s cubic-bezier(.2,1.3,.35,1) both}
+@keyframes platin{from{transform:scaleY(0);opacity:0}to{transform:scaleY(1);opacity:1}}
+
+/* sparks */
+.spark{position:absolute;width:22px;height:22px;transform:translate(-50%,-50%);z-index:7;transition:opacity .2s}
+.spark::before{content:"";position:absolute;inset:0;background:var(--warn);box-shadow:0 0 14px var(--warn);
+  clip-path:polygon(50% 0,61% 39%,100% 50%,61% 61%,50% 100%,39% 61%,0 50%,39% 39%);animation:sparkspin 3s linear infinite}
+@keyframes sparkspin{to{transform:rotate(360deg)}}
+.spark.got{animation:sparkpop .4s ease-out forwards}
+@keyframes sparkpop{0%{transform:translate(-50%,-50%) scale(1)}100%{transform:translate(-50%,-50%) scale(2.4);opacity:0}}
+.burst{position:absolute;width:40px;height:40px;transform:translate(-50%,-50%);z-index:8;pointer-events:none;border-radius:50%;
+  background:radial-gradient(closest-side, color-mix(in oklab,var(--warn),transparent 10%), transparent 70%);animation:burst .45s ease-out forwards}
+@keyframes burst{0%{transform:translate(-50%,-50%) scale(.3);opacity:.9}100%{transform:translate(-50%,-50%) scale(1.6);opacity:0}}
+
+/* portal */
+.portal{position:absolute;transform:translate(-50%,-50%);width:90px;height:140px;z-index:6}
+.portal .pr{position:absolute;inset:0;border-radius:50%;border:4px solid var(--acc2);box-shadow:0 0 30px var(--acc2),inset 0 0 30px color-mix(in oklab,var(--acc2),transparent 40%);
+  background:radial-gradient(closest-side, color-mix(in oklab,var(--acc),transparent 55%), transparent 75%);animation:portalpulse 1.8s ease-in-out infinite}
+@keyframes portalpulse{0%,100%{transform:scale(.96)}50%{transform:scale(1.05)}}
+.portal .swirl{position:absolute;inset:14px;border-radius:50%;border:2px dashed color-mix(in oklab,var(--acc2),transparent 30%);animation:spin 3s linear infinite}
+
+/* hero */
+.hero{position:absolute;width:42px;height:46px;transform:translate(-50%,-50%);z-index:9;will-change:left,top}
+.hero .hbody{position:absolute;inset:0;border-radius:14px 14px 12px 12px;
+  background:linear-gradient(180deg, color-mix(in oklab,var(--hero,#2BE5FF),white 25%), var(--hero,#2BE5FF));
+  box-shadow:0 0 22px color-mix(in oklab,var(--hero,#2BE5FF),transparent 35%),inset 0 -6px 10px rgba(0,0,0,.25)}
+.hero .eye{position:absolute;top:13px;right:9px;width:8px;height:8px;border-radius:50%;background:#0b0a26}
+.hero .eye::after{content:"";position:absolute;right:1px;top:1px;width:3px;height:3px;border-radius:50%;background:#fff}
+.hero .trail{position:absolute;left:-6px;top:50%;width:30px;height:8px;border-radius:6px;transform:translateY(-50%);
+  background:linear-gradient(90deg,transparent,color-mix(in oklab,var(--hero,#2BE5FF),transparent 30%));filter:blur(1px);opacity:.6}
+.hero.run .hbody{animation:squash .28s ease-in-out infinite}
+@keyframes squash{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.92) translateY(2px)}}
+.hero.jump{animation:none}
+.hero.jump .hbody{transform:rotate(-8deg)}
+
+/* complete banner */
+.complete{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.9);z-index:12;text-align:center;opacity:0;pointer-events:none;transition:opacity .4s, transform .5s cubic-bezier(.2,1.3,.35,1)}
+.complete.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.complete .big{font-family:'Chakra Petch';font-weight:700;font-size:54px;background:linear-gradient(180deg,#fff,var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 24px color-mix(in oklab,var(--acc2),transparent 40%))}
+.complete .sub{margin-top:8px;color:var(--text);font-size:18px}
+.confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:11}
+.confetti i{position:absolute;width:10px;height:15px;border-radius:2px;animation:fall var(--d,1.6s) ease-in forwards}
+@keyframes fall{0%{transform:translateY(-30px) rotate(0);opacity:1}100%{transform:translateY(620px) rotate(560deg);opacity:0}}
+
+/* ===== bottom control deck ===== */
+.deck{position:absolute;left:60px;right:60px;bottom:40px;z-index:20;display:flex;gap:22px;align-items:stretch;
+  background:var(--panel);border:1px solid var(--panel-edge);border-radius:22px;backdrop-filter:blur(16px);padding:20px 24px;box-shadow:0 24px 60px rgba(0,0,0,.5)}
+.pickgroup{flex:1;min-width:0}
+.pickgroup .pl{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--slate);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.pickgroup .pl b{width:6px;height:6px;border-radius:50%;background:var(--acc);box-shadow:0 0 8px var(--acc)}
+.chips{display:flex;flex-wrap:wrap;gap:9px}
+.chip{font-size:14.5px;padding:10px 15px;border-radius:30px;cursor:pointer;background:rgba(170,140,255,.08);border:1.5px solid var(--panel-edge);color:var(--text);transition:.16s;display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.chip:hover{background:rgba(170,140,255,.16);transform:translateY(-1px)}
+.chip.sel{background:color-mix(in oklab,var(--acc),transparent 70%);border-color:var(--acc);color:#fff;box-shadow:0 0 18px color-mix(in oklab,var(--acc),transparent 62%)}
+.chip .em{font-size:16px}
+.deck .sep{width:1px;background:var(--panel-edge);flex:none}
+
+.genwrap{flex:none;display:flex;flex-direction:column;justify-content:center;align-items:stretch;gap:12px;min-width:280px}
+.ratings{display:flex;gap:10px}
+.rate{flex:1;text-align:center;background:rgba(170,140,255,.07);border:1px solid var(--panel-edge);border-radius:12px;padding:8px 6px}
+.rate .rk{font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--slate)}
+.rate .rv{font-family:'Space Mono';font-weight:700;font-size:16px;margin-top:3px;color:var(--text)}
+.rate .stars{color:var(--warn);letter-spacing:1px;font-size:13px}
+.genbtn{display:inline-flex;align-items:center;justify-content:center;gap:11px;cursor:pointer;font-family:'Chakra Petch';font-weight:700;font-size:18px;letter-spacing:.03em;
+  border:none;border-radius:15px;padding:16px;color:#1a0830;background:linear-gradient(120deg,color-mix(in oklab,var(--acc),white 14%),var(--acc));
+  box-shadow:0 12px 34px rgba(177,76,255,.45);transition:transform .14s,box-shadow .2s,opacity .2s;position:relative;overflow:hidden}
+.genbtn:hover{transform:translateY(-2px);box-shadow:0 18px 46px rgba(177,76,255,.6)}
+.genbtn:active{transform:translateY(0) scale(.99)}
+.genbtn:disabled{opacity:.55;cursor:default;transform:none}
+.genbtn svg{width:20px;height:20px}
+.genbtn::after{content:"";position:absolute;top:0;left:-60%;width:38%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.5),transparent);transform:skewX(-18deg);animation:sheen 4.5s ease-in-out infinite}
+@keyframes sheen{0%,72%{left:-60%}86%,100%{left:130%}}
+
+.quest{position:absolute;left:60px;right:60px;top:96px;z-index:18;text-align:center;font-size:15.5px;color:#cfc7f5;
+  font-style:italic;letter-spacing:.01em;min-height:22px;transition:opacity .4s}
+.quest b{color:var(--acc2);font-style:normal;font-weight:600}
+
+/* show host — Nadim */
+.host{position:absolute;right:34px;bottom:250px;width:250px;height:470px;z-index:16;pointer-events:none}
+.host img{position:absolute;right:0;bottom:0;height:100%;width:auto;display:block;
+  filter:drop-shadow(0 0 26px rgba(177,76,255,.5)) drop-shadow(0 10px 24px rgba(0,0,0,.55));
+  animation:hostsway 5s ease-in-out infinite}
+@keyframes hostsway{0%,100%{transform:translateY(0) rotate(-.4deg)}50%{transform:translateY(-6px) rotate(.4deg)}}
+.host .host-glow{position:absolute;right:18px;bottom:-8px;width:220px;height:56px;border-radius:50%;
+  background:radial-gradient(closest-side, rgba(177,76,255,.34), transparent 72%);filter:blur(5px)}
+
+/* pilot chip */
+.pilotchip{position:absolute;left:38px;top:96px;z-index:29;display:flex;align-items:center;gap:15px;padding:11px 18px 11px 11px;border-radius:50px;background:var(--panel);border:1px solid var(--panel-edge);backdrop-filter:blur(16px);box-shadow:0 16px 40px rgba(0,0,0,.45);animation:chipIn .75s cubic-bezier(.2,1.35,.35,1) both}
+@keyframes chipIn{from{transform:translateY(-18px) scale(.9);opacity:.6}to{transform:translateY(0) scale(1);opacity:1}}
+.pilotchip .pring{width:54px;height:54px;border-radius:50%;flex:none;display:grid;place-items:center;box-shadow:0 0 0 2px var(--acc),0 0 22px rgba(177,76,255,.55);animation:pilotpulse 2.8s ease-in-out infinite}
+@keyframes pilotpulse{0%,100%{box-shadow:0 0 0 2px var(--acc),0 0 16px rgba(177,76,255,.4)}50%{box-shadow:0 0 0 2px var(--acc),0 0 30px rgba(177,76,255,.8)}}
+.pilotchip .pring img{width:48px;height:48px;border-radius:50%;object-fit:cover;object-position:50% 24%;display:block}
+.pilotchip .ptx .pk{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--slate);font-weight:600}
+.pilotchip .ptx .pn{font-family:'Chakra Petch';font-weight:600;font-size:19px;letter-spacing:.03em}
+
+@media (prefers-reduced-motion: reduce){
+  .stars i,.reactor .core,.reactor .ring,.spark::before,.portal .pr,.portal .swirl,.hero.run .hbody,.genbtn::after,.confetti i{animation:none !important}
+}

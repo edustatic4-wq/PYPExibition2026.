@@ -1,0 +1,160 @@
+/* Pilots flip-card screen — sits between intro and city */
+.pilots-screen{position:fixed;inset:0;z-index:280;overflow:hidden;
+  background:linear-gradient(180deg,#0e1a40 0%,#11163A 36%,#1a1640 64%,#0d0c2a 100%);
+  display:flex;flex-direction:column;align-items:center;
+  /* custom emblem cursor (this screen only) */
+  cursor:url('brand/emblem-cursor.png') 32 32, auto}
+.pilots-screen *{cursor:url('brand/emblem-cursor.png') 32 32, auto}
+
+/* ambient backdrop */
+.pilots-screen .ps-glow{position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(50% 40% at 18% 16%, color-mix(in oklab,#2BE5FF,transparent 86%), transparent 60%),
+    radial-gradient(50% 40% at 82% 18%, color-mix(in oklab,#FF5E8A,transparent 88%), transparent 60%),
+    radial-gradient(60% 50% at 50% 100%, color-mix(in oklab,#B14CFF,transparent 86%), transparent 65%)}
+.pilots-screen .ps-stars{position:absolute;inset:0;pointer-events:none}
+.pilots-screen .ps-stars i{position:absolute;width:2px;height:2px;border-radius:50%;background:#cfe4ff;
+  animation:pstw var(--d,4s) ease-in-out infinite alternate}
+@keyframes pstw{from{opacity:.12}to{opacity:.7}}
+
+/* header */
+.ps-head{text-align:center;margin-top:54px;z-index:2;animation:psHeadIn .7s cubic-bezier(.2,.9,.2,1) both}
+@keyframes psHeadIn{from{transform:translateY(-14px)}to{transform:translateY(0)}}
+.ps-eyebrow{font-size:12.5px;letter-spacing:.42em;text-transform:uppercase;color:#2BE5FF;
+  display:flex;align-items:center;justify-content:center;gap:13px;margin-bottom:14px}
+.ps-eyebrow::before,.ps-eyebrow::after{content:"";width:46px;height:1px;background:linear-gradient(90deg,transparent,#2BE5FF)}
+.ps-eyebrow::after{transform:scaleX(-1)}
+.ps-title{font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:52px;line-height:1.02;margin:0;letter-spacing:.01em;
+  background:linear-gradient(100deg,#2BE5FF,#B14CFF 55%,#FF5E8A);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 0 26px rgba(120,120,255,.3))}
+.ps-sub{margin-top:14px;font-size:18px;color:#cdd8f5;letter-spacing:.01em}
+
+/* card row */
+.ps-row{flex:1;display:flex;align-items:center;justify-content:center;gap:50px;z-index:2;perspective:1800px;padding:20px 40px}
+
+.flipcard-wrap{animation:cardDrop .7s cubic-bezier(.2,1.1,.3,1) both}
+@keyframes cardDrop{from{opacity:0;transform:translateY(40px) scale(.94)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+.flipcard{width:330px;height:476px;position:relative;cursor:pointer;
+  transform-style:preserve-3d;transition:transform .8s cubic-bezier(.4,1.1,.4,1);
+  --acc:#2BE5FF}
+.flipcard.flipped{transform:rotateY(180deg)}
+.flipcard .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:26px;overflow:hidden;
+  border:1px solid color-mix(in oklab,var(--acc),transparent 50%);
+  box-shadow:0 30px 70px rgba(0,0,0,.5), 0 0 50px color-mix(in oklab,var(--acc),transparent 74%);
+  background:linear-gradient(180deg, rgba(22,28,64,.85), rgba(12,15,40,.92))}
+
+/* ---- front ---- */
+.fc-front{display:flex;flex-direction:column;align-items:center;padding:34px 26px}
+.fc-portrait{width:200px;height:200px;border-radius:50%;position:relative;margin-top:6px;
+  box-shadow:0 0 0 3px color-mix(in oklab,var(--acc),white 8%), 0 0 40px color-mix(in oklab,var(--acc),transparent 55%)}
+.fc-portrait .spin{position:absolute;inset:-9px;border-radius:50%;
+  background:conic-gradient(from 0deg, var(--acc), transparent 32%, color-mix(in oklab,var(--acc),white 25%) 60%, transparent 76%, var(--acc));
+  filter:blur(2px);opacity:.85;animation:fcspin 8s linear infinite}
+@keyframes fcspin{to{transform:rotate(360deg)}}
+.fc-portrait .mask{position:absolute;inset:0;border-radius:50%;overflow:hidden;background:#0a0f2a;
+  border:3px solid color-mix(in oklab,var(--acc),white 6%)}
+.fc-portrait .mask img{width:100%;height:100%;object-fit:cover;object-position:50% 18%;display:block;transform:scale(1.16)}
+.fc-name{font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:34px;margin-top:26px;color:#fff;letter-spacing:.02em}
+.fc-dist{margin-top:6px;font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:color-mix(in oklab,var(--acc),white 30%)}
+.fc-flip{margin-top:auto;display:inline-flex;align-items:center;gap:9px;font-size:13px;letter-spacing:.16em;text-transform:uppercase;
+  color:#aebbe0;background:rgba(120,160,255,.08);border:1px solid color-mix(in oklab,var(--acc),transparent 55%);
+  border-radius:30px;padding:10px 18px}
+.fc-flip svg{width:16px;height:16px}
+.flipcard .glowpulse{position:absolute;inset:0;border-radius:26px;pointer-events:none;
+  box-shadow:inset 0 0 40px color-mix(in oklab,var(--acc),transparent 80%);animation:fcpulse 3s ease-in-out infinite}
+@keyframes fcpulse{0%,100%{opacity:.4}50%{opacity:.9}}
+
+/* ---- back ---- */
+.fc-back{transform:rotateY(180deg);display:flex;flex-direction:column;padding:36px 30px}
+.fc-back .bh{font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:30px;color:#fff;letter-spacing:.02em;
+  display:flex;align-items:center;gap:12px}
+.fc-back .bh::before{content:"";width:11px;height:11px;border-radius:3px;background:var(--acc);box-shadow:0 0 12px var(--acc);transform:rotate(45deg)}
+.fc-sections{margin-top:22px;display:flex;flex-direction:column;gap:14px}
+.fc-sec .k{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:color-mix(in oklab,var(--acc),white 32%)}
+.fc-sec .v{font-family:'Chakra Petch',sans-serif;font-weight:600;font-size:18px;color:#fff;margin-top:4px}
+.fc-line{margin-top:20px;font-size:16px;line-height:1.55;color:#dbe4ff;flex:1}
+.fc-line{margin-top:18px;font-size:15.5px;line-height:1.5;color:#dbe4ff}
+.fc-tags{margin-top:18px;display:flex;flex-direction:column;gap:9px}
+.fc-tag{font-size:14px;color:#aab6df;letter-spacing:.02em}
+.fc-tag b{color:#fff;font-weight:600;font-family:'Chakra Petch',sans-serif}
+.fc-playagain{margin-top:auto;align-self:flex-start;display:inline-flex;align-items:center;gap:9px;cursor:pointer;
+  font-family:'Chakra Petch',sans-serif;font-weight:600;font-size:14px;letter-spacing:.03em;color:#05131f;
+  background:linear-gradient(120deg,color-mix(in oklab,var(--acc),white 14%),var(--acc));border:none;border-radius:30px;padding:11px 20px;
+  box-shadow:0 8px 22px color-mix(in oklab,var(--acc),transparent 60%)}
+.fc-playagain svg{width:14px;height:14px}
+.fc-backbtn{margin-top:12px;align-self:flex-start;display:inline-flex;align-items:center;gap:9px;cursor:pointer;
+  font-family:'Sora',sans-serif;font-weight:500;font-size:13px;letter-spacing:.04em;color:#aebbe0;
+  background:rgba(120,160,255,.08);border:1px solid color-mix(in oklab,var(--acc),transparent 60%);border-radius:30px;padding:9px 17px}
+.fc-backbtn svg{width:14px;height:14px}
+
+/* full-screen pilot video player */
+.pv-overlay{position:fixed;inset:0;z-index:320;display:flex;align-items:center;justify-content:center;
+  background:rgba(4,6,18,.86);backdrop-filter:blur(10px);animation:pvIn .3s ease both}
+@keyframes pvIn{from{opacity:0}to{opacity:1}}
+.pv-frame{position:relative;width:min(1040px,92vw);max-height:88vh;border-radius:20px;overflow:hidden;
+  border:1px solid color-mix(in oklab,var(--acc),transparent 45%);
+  box-shadow:0 40px 120px rgba(0,0,0,.7), 0 0 70px color-mix(in oklab,var(--acc),transparent 72%);background:#05060f}
+.pv-frame video{display:block;width:100%;max-height:88vh;background:#000;
+  transform-origin:top left;transform:scale(1.13)}
+.pv-kicker{position:absolute;left:18px;top:16px;z-index:2;display:inline-flex;align-items:center;gap:9px;
+  font-family:'Chakra Petch',sans-serif;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#fff;
+  background:rgba(8,12,30,.6);border:1px solid color-mix(in oklab,var(--acc),transparent 50%);border-radius:30px;padding:8px 15px;backdrop-filter:blur(6px)}
+.pv-kicker .pv-dot{width:8px;height:8px;border-radius:50%;background:var(--acc);box-shadow:0 0 10px var(--acc)}
+.pv-close{position:absolute;right:14px;top:14px;z-index:2;width:42px;height:42px;border-radius:50%;border:none;cursor:pointer;
+  display:grid;place-items:center;background:rgba(10,14,30,.7);color:#fff;backdrop-filter:blur(6px)}
+.pv-close:hover{background:rgba(30,40,70,.9)} .pv-close svg{width:20px;height:20px}
+/* audio-only state: portrait + equalizer behind the audio */
+.pv-frame.audio video{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.pv-audio{padding:54px 48px 40px;display:flex;flex-direction:column;align-items:center;
+  background:radial-gradient(70% 60% at 50% 30%, color-mix(in oklab,var(--acc),transparent 82%), transparent 70%)}
+.pv-portrait{width:168px;height:168px;border-radius:50%;position:relative;margin-top:10px;
+  box-shadow:0 0 0 3px color-mix(in oklab,var(--acc),white 8%), 0 0 44px color-mix(in oklab,var(--acc),transparent 50%)}
+.pv-pspin{position:absolute;inset:-9px;border-radius:50%;
+  background:conic-gradient(from 0deg, var(--acc), transparent 32%, color-mix(in oklab,var(--acc),white 25%) 60%, transparent 76%, var(--acc));
+  filter:blur(2px);opacity:.85;animation:fcspin 8s linear infinite}
+.pv-pmask{position:absolute;inset:0;border-radius:50%;overflow:hidden;background:#0a0f2a;border:3px solid color-mix(in oklab,var(--acc),white 6%)}
+.pv-pmask img{width:100%;height:100%;object-fit:cover;object-position:50% 18%;transform:scale(1.16)}
+.pv-name{font-family:'Chakra Petch',sans-serif;font-weight:700;font-size:32px;color:#fff;margin-top:22px;letter-spacing:.02em}
+.pv-tag{font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:color-mix(in oklab,var(--acc),white 30%);margin-top:6px}
+.pv-eq{display:flex;align-items:flex-end;justify-content:center;gap:5px;height:90px;margin:26px 0 6px}
+.pv-eq i{width:7px;height:12px;border-radius:5px;background:linear-gradient(180deg,color-mix(in oklab,var(--acc),white 25%),var(--acc));
+  box-shadow:0 0 10px color-mix(in oklab,var(--acc),transparent 55%);transform-origin:bottom;opacity:.5}
+.pv-eq.on i{animation:pvbounce var(--d) ease-in-out infinite alternate;animation-delay:calc(var(--i)*-0.07s);opacity:1}
+@keyframes pvbounce{from{height:10px}to{height:80px}}
+.pv-controls{display:flex;align-items:center;gap:16px;width:100%;max-width:560px;margin-top:14px}
+.pv-play{width:54px;height:54px;flex:none;border:none;border-radius:50%;cursor:pointer;display:grid;place-items:center;color:#05131f;
+  background:linear-gradient(180deg,color-mix(in oklab,var(--acc),white 14%),var(--acc));box-shadow:0 0 26px color-mix(in oklab,var(--acc),transparent 50%)}
+.pv-play svg{width:22px;height:22px}
+.pv-track{flex:1}
+.pv-bar{height:8px;border-radius:6px;background:rgba(120,150,255,.18);overflow:hidden;cursor:pointer}
+.pv-fill{height:100%;border-radius:6px;background:linear-gradient(90deg,color-mix(in oklab,var(--acc),white 20%),var(--acc));box-shadow:0 0 12px color-mix(in oklab,var(--acc),transparent 50%)}
+.pv-time{display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:12px;color:#9fb0da;margin-top:7px}
+@media (prefers-reduced-motion: reduce){ .pv-overlay,.pv-pspin,.pv-eq.on i{animation:none !important} }
+/* loading spinner while a card video buffers */
+.pv-loading{position:absolute;inset:0;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;
+  background:radial-gradient(70% 60% at 50% 45%, rgba(12,16,40,.55), rgba(6,8,22,.82));pointer-events:none}
+.pv-spin{width:52px;height:52px;border-radius:50%;border:3px solid rgba(120,160,255,.2);border-top-color:var(--acc);
+  animation:pvspin .8s linear infinite;box-shadow:0 0 26px color-mix(in oklab,var(--acc),transparent 50%)}
+@keyframes pvspin{to{transform:rotate(360deg)}}
+.pv-ltx{font-family:'Chakra Petch',sans-serif;font-size:14px;letter-spacing:.16em;text-transform:uppercase;color:#aebbe0}
+
+/* gated enter button */
+.ps-enter-wrap{height:120px;display:flex;align-items:center;justify-content:center;z-index:3}
+.ps-enter{display:inline-flex;align-items:center;gap:13px;cursor:pointer;font-family:'Chakra Petch',sans-serif;font-weight:600;
+  font-size:20px;letter-spacing:.02em;color:#05131f;background:linear-gradient(120deg,#7ff0ff,#2BE5FF);border:none;border-radius:50px;
+  padding:17px 34px;box-shadow:0 16px 46px rgba(43,229,255,.5);animation:psEnterIn .6s cubic-bezier(.2,1.2,.3,1) both, psEnterPulse 2.4s ease-in-out infinite 0.6s}
+@keyframes psEnterIn{from{opacity:0;transform:translateY(22px) scale(.92)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes psEnterPulse{0%,100%{box-shadow:0 16px 46px rgba(43,229,255,.4)}50%{box-shadow:0 20px 60px rgba(43,229,255,.75)}}
+.ps-enter .pe-ic{width:30px;height:30px;border-radius:50%;background:rgba(5,19,31,.15);display:grid;place-items:center}
+.ps-enter .pe-ic svg{width:18px;height:18px}
+.ps-progress{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:#7e8bb8;display:flex;align-items:center;gap:10px}
+.ps-progress b{font-family:'Space Mono',monospace;color:#cdd8f5}
+.ps-progress .pdots{display:flex;gap:6px}
+.ps-progress .pdots i{width:8px;height:8px;border-radius:50%;background:rgba(120,140,200,.3);transition:background .3s}
+.ps-progress .pdots i.on{background:#2BE5FF;box-shadow:0 0 8px #2BE5FF}
+
+@media (prefers-reduced-motion: reduce){
+  .flipcard,.flipcard-wrap,.fc-portrait .spin,.flipcard .glowpulse,.ps-enter,.ps-stars i,.ps-head{animation:none !important}
+  .flipcard{transition:transform .25s ease}
+}
